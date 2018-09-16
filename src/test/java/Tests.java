@@ -18,7 +18,7 @@ public class Tests {
         } catch (IllegalArgumentException error) {
             assertEquals("beanClazz is mandatory", error.getMessage());
         }
-    }ini
+    }
 
     @Test
     void should_throw_exception_when_beanClazz_abstract() {

@@ -1,3 +1,3 @@
-abstract public class MyAbstractBean {
+abstract public class MyAbstractBean extends MyAbstractBaseBean{
 
 }

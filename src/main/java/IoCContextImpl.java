@@ -21,66 +21,63 @@ public class IoCContextImpl implements IoCContext{
             throw new IllegalStateException();
         }
         if (beanClazz == null) {
-            String errorMessage = "beanClazz is mandatory";
-            throw new IllegalArgumentException(errorMessage);
+            checkNullClass(beanClazz, "beanClazz");
         }
         if (beanCache.contains(beanClazz)) {
             return;
         }
-        if (Modifier.isAbstract(beanClazz.getModifiers())) {
-            String errorMessage = String.format("%s is abstract", beanClazz.getName());
-            throw new IllegalArgumentException(errorMessage);
+        if (Modifier.isAbstract(beanClazz.getModifiers()) || Modifier.isInterface(beanClazz.getModifiers())) {
+            checkModifierAbstract(beanClazz);
         }
-        try {
-            Constructor constructor = beanClazz.getConstructor();
-        } catch (Exception error) {
-            String errorMessage = String.format("%s has no default constructor.", beanClazz.getName());
-            throw new IllegalArgumentException(errorMessage);
-        }
+        checkConstructor(beanClazz);
         beanCache.add(beanClazz);
         beanMap.put(beanClazz, beanClazz);
     }
 
+    public void checkNullClass(Class<?> nullClazz, String clazzName) {
+        String errorMessage = String.format("%s is mandatory", clazzName);
+        throw new IllegalArgumentException(errorMessage);
+    }
+
     @Override
     public <T> void registerBean(Class<? super T> resolveClazz, Class<T> beanClazz) {
-//        if (isGettingBean) {
-//            throw new IllegalStateException();
-//        }
-//        if (beanClazz == null) {
-//            String errorMessage = "beanClazz is mandatory";
-//            throw new IllegalArgumentException(errorMessage);
-//        }
-//        if (resolveClazz == null) {
-//            String errorMessage = "resolveClazz is mandatory";
-//        }
-//        if (beanCache.contains(beanClazz) || beanCache.contains(resolveClazz)) {
-//            return;
-//        }
-//        if (Modifier.isAbstract(beanClazz.getModifiers())) {
-//            String errorMessage = String.format("%s is abstract", beanClazz.getName());
-//            throw new IllegalArgumentException(errorMessage);
-//        }
-//        if (Modifier.isAbstract(resolveClazz.getModifiers())) {
-//            String errorMessage = String.format("%s is abstract", resolveClazz.getName());
-//            throw new IllegalArgumentException(errorMessage);
-//        }
-//        try {
-//            Constructor constructor = beanClazz.getConstructor();
-//        } catch (Exception error) {
-//            String errorMessage = String.format("%s has no default constructor.", beanClazz.getName());
-//            throw new IllegalArgumentException(errorMessage);
-//        }
-//        try {
-//            Constructor constructor = resolveClazz.getConstructor();
-//        } catch (Exception error) {
-//            String errorMessage = String.format("%s has no default constructor.", resolveClazz.getName());
-//            throw new IllegalArgumentException(errorMessage);
-//        }
+        if (isGettingBean) {
+            throw new IllegalStateException();
+        }
+        if (beanClazz == null) {
+           checkNullClass(beanClazz, "beanClazz");
+        }
+        if (resolveClazz == null) {
+            checkNullClass(resolveClazz, "resolveClazz");
+        }
+        if (beanCache.contains(beanClazz)) {
+            return;
+        }
+        if (Modifier.isAbstract(beanClazz.getModifiers()) || Modifier.isInterface(beanClazz.getModifiers())) {
+            checkModifierAbstract(beanClazz);
+        }
+        if (Modifier.isAbstract(resolveClazz.getModifiers()) || Modifier.isInterface(resolveClazz.getModifiers())) {
+            checkModifierAbstract(resolveClazz);
+        }
+        checkConstructor(beanClazz);
+        checkConstructor(resolveClazz);
         beanMap.put(resolveClazz, beanClazz);
         beanCache.add(resolveClazz);
         beanCache.add(beanClazz);
     }
 
+    public void checkConstructor(Class<?> clazz) {
+        try {
+            Constructor constructor = clazz.getConstructor();
+        } catch (Exception error) {
+            String errorMessage = String.format("%s has no default constructor.", clazz.getName());
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+    public void checkModifierAbstract(Class<?> clazz) {
+        String errorMessage = String.format("%s is abstract", clazz.getName());
+        throw new IllegalArgumentException(errorMessage);
+    }
     @Override
     public <T> T getBean(Class<T> resolveClazz) throws IllegalAccessException, InstantiationException {
         this.isGettingBean = true;

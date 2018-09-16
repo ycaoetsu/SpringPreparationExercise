@@ -12,7 +12,7 @@ public class Tests {
     }
 
     @Test
-    void should_throw_exception_when_beanClazz_null() {
+    void should_throw_exception_when_beanClazz_null_when_register_with_one_parameter() {
         try {
             context.registerBean(null);
         } catch (IllegalArgumentException error) {
@@ -21,7 +21,7 @@ public class Tests {
     }
 
     @Test
-    void should_throw_exception_when_beanClazz_abstract() {
+    void should_throw_exception_when_beanClazz_abstract_when_register_with_one_parameter() {
         try {
             context.registerBean(MyAbstractBean.class);
         } catch (IllegalArgumentException error) {
@@ -30,7 +30,7 @@ public class Tests {
     }
 
     @Test
-    void should_throw_exception_when_beanClazz_interface() {
+    void should_throw_exception_when_beanClazz_interface_when_register_with_one_parameter() {
         try {
             context.registerBean(MyInterfaceBean.class);
         } catch (IllegalArgumentException error) {
@@ -39,18 +39,20 @@ public class Tests {
     }
 
     @Test
-    void should_throw_exception_when_no_default_constructor() {
+    void should_throw_exception_when_no_default_constructor_when_register_with_one_parameter() {
         try {
             context.registerBean(MyNoDefaultConstructorClass.class);
+            fail("not caught expected IllegalArgumentException when no default constructor");
         } catch (IllegalArgumentException error) {
             assertEquals("MyNoDefaultConstructorClass has no default constructor.", error.getMessage());
         }
     }
 
     @Test
-    void should_throw_exception_when_private_constructor() {
+    void should_throw_exception_when_private_constructor_when_register_with_one_parameter() {
         try {
             context.registerBean(MyPrivateConstructorBean.class);
+            fail("not caught expected IllegalArgumentException when private constructor");
         } catch (IllegalArgumentException error) {
             assertEquals("MyPrivateConstructorBean has no default constructor.", error.getMessage());
         }
@@ -66,7 +68,7 @@ public class Tests {
     }
 
     @Test
-    void should_no_error_message_when_pass_an_already_registered_beanClazz() {
+    void should_no_error_message_when_pass_an_already_registered_beanClazz_when_register_with_one_parameter() {
         context.registerBean(MyBean.class);
         try {
             context.registerBean(MyBean.class);
@@ -141,7 +143,7 @@ public class Tests {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            context.registerBean(MyBean.class);
+            context.registerBean(MyBeanBase.class, MyBean.class);
             fail("cannot catch expected IllegalStateException when registering bean while gettingBean.");
         } catch (IllegalStateException e) {
             assertTrue(true, "IllegalStateException caught");
@@ -158,6 +160,91 @@ public class Tests {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_resolveClazz_null_when_register_with_two_parameters() {
+        try {
+            context.registerBean(null, MyBean.class);
+        } catch (IllegalArgumentException error) {
+            assertEquals("resolveClazz is mandatory", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_beanClazz_null_when_register_with_two_parameters() {
+        try {
+            context.registerBean(MyBean.class, null);
+        } catch (IllegalArgumentException error) {
+            assertEquals("beanClazz is mandatory", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_beanBaseClazz_abstract_when_register_with_two_parameter() {
+        try {
+            context.registerBean(MyAbstractBaseBean.class, MyAbstractBaseBeanChild.class);
+        } catch (IllegalArgumentException error) {
+            assertEquals("MyAbstractBaseBean is abstract", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_beanClazz_abstract_when_register_with_two_parameter() {
+        try {
+            context.registerBean(MyAbstractBeanParent.class, MyAbstractBaseBean.class);
+        } catch (IllegalArgumentException error) {
+            assertEquals("MyAbstractBaseBean is abstract", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_beanClazz_interface_when_register_with_two_parameter() {
+        try {
+            context.registerBean(MyInterfaceBean.class, MyInterfaceBeanImplement.class);
+        } catch (IllegalArgumentException error) {
+            assertEquals("MyInterfaceBean is abstract", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_no_resolve_default_constructor_when_register_with_two_parameter() {
+        try {
+            context.registerBean(MyNoDefaultConstructorClass.class, MyNoDefaultConstructorClass.class);
+            fail("not caught expected IllegalArgumentException when no default constructor");
+        } catch (IllegalArgumentException error) {
+            assertEquals("MyNoDefaultConstructorClass has no default constructor.", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_bean_no_default_constructor_when_register_with_two_parameter() {
+        try {
+            context.registerBean(MyBean.class, MyNoDefaultConstructorClassChild.class);
+            fail("not caught expected IllegalArgumentException when no default constructor");
+        } catch (IllegalArgumentException error) {
+            assertEquals("MyNoDefaultConstructorClassChild has no default constructor.", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_resolve_private_constructor_when_register_with_two_parameter() {
+        try {
+            context.registerBean(MyPrivateConstructorBean.class, MyPrivateConstructorBean.class);
+            fail("not caught expected IllegalArgumentException when private constructor");
+        } catch (IllegalArgumentException error) {
+            assertEquals("MyPrivateConstructorBean has no default constructor.", error.getMessage());
+        }
+    }
+
+    @Test
+    void should_throw_exception_when_bean_private_constructor_when_register_with_two_parameter() {
+        try {
+            context.registerBean(MyBean.class, MyPrivateConstructorBeanChild.class);
+            fail("not caught expected IllegalArgumentException when private constructor");
+        } catch (IllegalArgumentException error) {
+            assertEquals("MyPrivateConstructorBeanChild has no default constructor.", error.getMessage());
         }
     }
 }
